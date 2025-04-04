@@ -1,4 +1,4 @@
-namespace DotBot.Models
+namespace DotBot.Models.ViewModels
 {
     public class ErrorViewModel
     {

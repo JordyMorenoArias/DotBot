@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using DotBot.Models;
+using DotBot.Models.ViewModels;
 
 namespace DotBot.Controllers;
 
