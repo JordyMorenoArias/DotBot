@@ -1,6 +1,7 @@
 ﻿using DotBot.Data;
 using DotBot.Models.Entities;
 using DotBot.Repositories.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace DotBot.Repositories
 {
@@ -24,14 +25,27 @@ namespace DotBot.Repositories
         }
 
         /// <summary>
+        /// Retrieves all messages associated with a specific chat session ID.
+        /// </summary>
+        /// <param name="chatSessionId">The chat session identifier.</param>
+        /// <returns>A collection of messages associated with the specified chat session ID.</returns>
+        public async Task<IEnumerable<Message>> GetMessagesByChatSessionId(int chatSessionId)
+        {
+            return await _context.Messages
+                .Where(m => m.ChatSessionId == chatSessionId)
+                .ToListAsync();
+        }
+
+        /// <summary>
         /// Adds a new message to the database.
         /// </summary>
         /// <param name="message">The message entity to add.</param>
         /// <returns><c>true</c> if the operation was successful; otherwise, <c>false</c>.</returns>
-        public async Task<bool> AddMessage(Message message)
+        public async Task<Message?> AddMessage(Message message)
         {
             await _context.Messages.AddAsync(message);
-            return await _context.SaveChangesAsync() > 0;
+            await _context.SaveChangesAsync();
+            return message;
         }
 
         /// <summary>

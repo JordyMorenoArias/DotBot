@@ -1,6 +1,7 @@
 ﻿using DotBot.Models.DTOs.User;
 using DotBot.Repositories.Interfaces;
 using DotBot.Services.Interfaces;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace DotBot.Services
 {
@@ -20,16 +21,24 @@ namespace DotBot.Services
         /// <exception cref="UnauthorizedAccessException">Thrown when required claims are missing or invalid.</exception>
         public UserAuthenticatedDto GetAuthenticatedUser(HttpContext httpContext)
         {
-            var userIdClaim = httpContext.User.FindFirst("Id")?.Value;
-            var userEmaimClaim = httpContext.User.FindFirst("Email")?.Value;
+            var tokenString = httpContext.Session.GetString("Token");
 
-            if (string.IsNullOrEmpty(userIdClaim) || string.IsNullOrEmpty(userEmaimClaim))
+            if (string.IsNullOrEmpty(tokenString))
+                throw new UnauthorizedAccessException("Token is missing from the session.");
+
+            var handler = new JwtSecurityTokenHandler();
+            var jwtToken = handler.ReadJwtToken(tokenString);
+
+            var userIdClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "Id")?.Value;
+            var userEmailClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "Email")?.Value;
+
+            if (string.IsNullOrEmpty(userIdClaim) || string.IsNullOrEmpty(userEmailClaim))
                 throw new UnauthorizedAccessException("Invalid token or unauthorized access.");
 
             return new UserAuthenticatedDto
             {
                 Id = int.Parse(userIdClaim),
-                Email = userEmaimClaim
+                Email = userEmailClaim
             };
         }
 

@@ -27,8 +27,13 @@ builder.Services.AddScoped<PasswordHasher<User>>();
 
 builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IChatSessionService, ChatSessionService>();
 builder.Services.AddScoped<IMessageService, MessageService>();
+builder.Services.AddScoped<IChatBotService, ChatBotService>();
+
+builder.Services.AddScoped<IChatIAService, GeminiService>();
+builder.Services.AddScoped<IMarkdownService, MarkdownService>();
 
 var jwtKey = builder.Configuration["Jwt:Key"];
 
@@ -67,6 +72,14 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 
 });
 
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromHours(1);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
+
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
@@ -83,6 +96,8 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+app.UseSession();
+
 app.UseHttpsRedirection();
 app.UseRouting();
 
@@ -92,7 +107,7 @@ app.MapStaticAssets();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}")
+    pattern: "{controller=Account}/{action=Login}")
     .WithStaticAssets();
 
 

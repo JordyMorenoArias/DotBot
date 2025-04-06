@@ -4,9 +4,10 @@ namespace DotBot.Repositories.Interfaces
 {
     public interface IMessageRepository
     {
-        Task<bool> AddMessage(Message message);
+        Task<Message?> AddMessage(Message message);
         Task<bool> DeleteMessage(int id);
         Task<Message?> GetMessageById(int id);
+        Task<IEnumerable<Message>> GetMessagesByChatSessionId(int chatSessionId);
         Task<bool> UpdateMessage(Message message);
     }
 }

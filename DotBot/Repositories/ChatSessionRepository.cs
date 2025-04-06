@@ -40,14 +40,28 @@ namespace DotBot.Repositories
         }
 
         /// <summary>
+        /// Retrieves the most recent chat session for a specific user, including its messages.
+        /// </summary>
+        /// param name="userId">The ID of the user whose most recent chat session is to be retrieved.</param>
+        /// <returns>The most recent chat session for the specified user, or <c>null</c> if not found.</returns>
+        public async Task<ChatSession?> GetMostRecentSessionByUserId(int userId)
+        {
+            return await _context.ChatSessions
+                .Where(cs => cs.UserId == userId)
+                .OrderByDescending(cs => cs.CreatedAt)
+                .FirstOrDefaultAsync();
+        }
+
+        /// <summary>
         /// Adds a new chat session to the database.
         /// </summary>
         /// <param name="chatSession">The chat session entity to add.</param>
         /// <returns><c>true</c> if the operation was successful; otherwise, <c>false</c>.</returns>
-        public async Task<bool> AddChatSession(ChatSession chatSession)
+        public async Task<ChatSession> AddChatSession(ChatSession chatSession)
         {
             await _context.ChatSessions.AddAsync(chatSession);
-            return await _context.SaveChangesAsync() > 0;
+            await _context.SaveChangesAsync();
+            return chatSession;
         }
 
         /// <summary>
