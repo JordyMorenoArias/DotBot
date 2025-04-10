@@ -1,0 +1,20 @@
+﻿@model IEnumerable<Message>
+
+@if (Model != null && Model.Any())
+{
+    @foreach (var message in Model)
+    {
+        if (message.Role == Role.user)
+        {
+            <div class="message user">
+                <div>@Html.Raw(message.Content)</div>
+            </div>
+        }
+        else if (message.Role == DotBot.Constrants.Role.assistant)
+        {
+            <div class="message bot">
+                <div>@Html.Raw(message.Content)</div>
+            </div>
+        }
+    }
+}

@@ -1,0 +1,28 @@
+﻿@model ChatViewModel
+
+@{
+    ViewData["Title"] = "Dot Bot";
+}
+
+<div>
+    @if (Model.CurrentChatSession != null)
+    {
+        <a class="btn-clean-session" asp-route-chatSessionId="@Model.CurrentChatSession.Id" asp-action="DeleteChatSession">Limpiar Chat</a>
+    }
+</div>
+
+
+<div class="chat-container">
+    <div class="chat-messages" id="chatMessages">
+            @Html.Partial("_MessagesPartial", Model.CurrentChatSession.Messages)
+    </div>
+    <form id="chat-form" class="chat-input">
+        <input type="hidden" id="chatSessionId" name="ChatSessionId" value="@Model.CurrentChatSession?.Id" />
+        <div class="chat-input-wrapper">
+            <input type="text" id="messageText" name="Content" placeholder="Escribe un mensaje..." autocomplete="off" required />
+            <button type="submit">Enviar</button>
+        </div>
+    </form>
+</div>
+
+<script src="~/js/chat.js" async defer></script>
