@@ -1,7 +1,10 @@
-window.addEventListener('DOMContentLoaded', () => {
+window.addEventListener('load', () => {
     const chatMessages = document.getElementById('chatMessages');
+
     if (chatMessages) {
-        chatMessages.scrollTop = chatMessages.scrollHeight;
+        setTimeout(() => {
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }, 0);
     }
 
     const chatForm = document.getElementById('chat-form');
@@ -9,8 +12,14 @@ window.addEventListener('DOMContentLoaded', () => {
     chatForm.addEventListener('submit', async function (e) {
         e.preventDefault();
 
-        const messageText = document.getElementById("messageText").value;
+        const messageTextInput = document.getElementById("messageText");
+        const sendButton = chatForm.querySelector('button[type="submit"]');
         const chatSessionId = document.getElementById("chatSessionId").value;
+
+        // Deshabilitar el botón para evitar doble envío
+        sendButton.disabled = true;
+
+        const messageText = messageTextInput.value;
 
         try {
             const response = await fetch('/Chat/SendMessage', {
@@ -24,10 +33,23 @@ window.addEventListener('DOMContentLoaded', () => {
                 })
             });
 
+            messageTextInput.value = "";
+
             if (response.ok) {
-                const html = await response.text();
-                document.getElementById("chatMessages").innerHTML = html;
-                document.getElementById("messageText").value = "";
+
+                const messages = await response.json();
+                console.log(messages);
+
+                messages.forEach(msg => {
+                    const div = document.createElement('div');
+                    div.classList.add("message");
+                    div.classList.add(msg.role == 0 ? "user" : "bot");
+
+                    div.innerHTML = `<div>${msg.content}</div>`;
+
+                    document.getElementById("chatMessages").appendChild(div);
+                });
+
                 chatMessages.scrollTop = chatMessages.scrollHeight;
             } else {
                 alert("Error al enviar el mensaje.");
@@ -35,6 +57,8 @@ window.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             console.error("Error:", error);
             alert("Error al enviar el mensaje.");
+        } finally {
+            sendButton.disabled = false;
         }
     });
 });

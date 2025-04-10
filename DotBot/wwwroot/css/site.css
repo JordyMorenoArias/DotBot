@@ -11,9 +11,6 @@ body {
 
 main {
     min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
 
 html {
@@ -47,7 +44,10 @@ html {
 /* styles login*/
 
 .form-container {
-    margin: auto;
+    position: absolute;
+    top: 50%; /* Mueve el contenedor al 50% de la altura del contenedor */
+    left: 50%; /* Mueve el contenedor al 50% de la anchura del contenedor */
+    transform: translate(-50%, -50%); /* Ajusta para que esté centrado */
     background-color: white;
     border-radius: 10px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
@@ -215,3 +215,109 @@ html {
     .chat-input button:hover {
         background-color: #0056b3;
     }
+
+.btn-clean-session {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    text-decoration: none;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}
+
+    .btn-clean-session:hover {
+        background-color: #0056b3;
+    }
+
+/* Encabezados */
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin-top: 1.2em;
+    margin-bottom: 0.5em;
+    font-weight: 600;
+    color: #222;
+}
+
+h1 {
+    font-size: 22px;
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 4px;
+}
+
+h2 {
+    font-size: 20px;
+    color: #444;
+}
+
+h3 {
+    font-size: 18px;
+    color: #555;
+}
+
+/* Estilos CSS Mejorados para Markdown */
+
+/* Párrafos y listas */
+p, li {
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    color: #333;
+    margin-bottom: 0.75em;
+}
+
+/* Listas con viñetas */
+ul {
+    padding-left: 1.5em;
+    margin-top: 0.5em;
+    margin-bottom: 1em;
+}
+
+/* Negritas y cursivas */
+strong {
+    font-weight: 600;
+}
+
+em {
+    font-style: italic;
+}
+
+/* Código en línea */
+code {
+    font-family: 'Courier New', monospace;
+    background-color: #f5f5f5;
+    color: #d63384;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+/* Bloques de código */
+pre {
+    background-color: #f4f4f4;
+    padding: 10px;
+    overflow-x: auto;
+    border-left: 4px solid #ccc;
+    margin: 1em 0;
+}
+
+/* Citas (blockquote) */
+blockquote {
+    margin: 1em 0;
+    padding: 0.5em 1em;
+    background-color: #f0f0f0;
+    border-left: 4px solid #999;
+    color: #555;
+    font-style: italic;
+}
+
+/* Separadores */
+hr {
+    border: none;
+    border-top: 1px solid #ccc;
+    margin: 2em 0;
+}

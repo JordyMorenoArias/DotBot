@@ -9,6 +9,7 @@ namespace DotBot.Services.Interfaces
         Task<bool> DeleteChatSession(int id);
         Task<bool> DeleteChatSessionsByUserId(int userId);
         Task<ChatSession?> GetChatSessionById(int id);
+        Task<ChatSession?> GetChatSessionByIdWithMessages(int id);
         Task<IEnumerable<ChatSession>> GetChatSessionsByUserId(int userId);
         Task<ChatSession?> GetMostRecentSessionByUserId(int userId);
         Task<bool> UpdateChatSessionTitle(ChatSessionUpdateDto chatSessionUpdate);

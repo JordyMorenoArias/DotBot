@@ -27,7 +27,7 @@ public class ChatController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index([FromQuery] int chatSessionId)
     {
         var user = _userService.GetAuthenticatedUser(HttpContext);
 
@@ -36,7 +36,7 @@ public class ChatController : Controller
 
         var chatSessions = await _chatSessionService.GetChatSessionsByUserId(user.Id);
 
-        ChatSession? currentChatSession = null;
+        ChatSession? currentChatSession = await _chatSessionService.GetChatSessionById(chatSessionId);
 
         if (currentChatSession == null)
         {
@@ -65,6 +65,9 @@ public class ChatController : Controller
     [HttpPost]
     public async Task<IActionResult> SendMessage([FromBody] MessageAddDto messageAdd)
     {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
         if (messageAdd == null)
             return BadRequest("Message cannot be null");
 
@@ -80,30 +83,24 @@ public class ChatController : Controller
         if (response == null)
             return BadRequest("Failed to get a response from the chat bot");
 
-        var updatedSession = await _chatSessionService.GetChatSessionById(messageAdd.ChatSessionId);
-
-        if (updatedSession == null)
-            return BadRequest("Chat session not found");
-
-        updatedSession.Messages = _markdownService.ConvertMarkdownToHtml(updatedSession.Messages).ToList();
-
-        return PartialView("_MessagesPartial", updatedSession);
+        var newMessages = _markdownService.ConvertMarkdownToHtml(response).ToList();
+        return Json(newMessages);
     }
 
     [HttpGet]
-    public async Task<IActionResult> DeleteChatSession(int id)
+    public async Task<IActionResult> DeleteChatSession([FromQuery] int chatSessionId)
     {
         var user = _userService.GetAuthenticatedUser(HttpContext);
 
         if (user == null)
             return RedirectToAction("Login", "Account");
 
-        var chatSession = await _chatSessionService.GetChatSessionById(id);
+        var chatSession = await _chatSessionService.GetChatSessionById(chatSessionId);
 
         if (chatSession == null || chatSession.UserId != user.Id)
             return NotFound();
 
-        await _chatSessionService.DeleteChatSession(id);
+        await _chatSessionService.DeleteChatSession(chatSessionId);
         return RedirectToAction("Index");
     }
 }

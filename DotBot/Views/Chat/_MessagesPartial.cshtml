@@ -1,10 +1,10 @@
-﻿@model ChatSession
+﻿@model IEnumerable<Message>
 
-@if (Model != null && Model.Messages != null && Model.Messages.Count > 0)
+@if (Model != null && Model.Any())
 {
-    @foreach (var message in Model.Messages)
+    @foreach (var message in Model)
     {
-        @if (message.Role == Role.user)
+        if (message.Role == Role.user)
         {
             <div class="message user">
                 <div>@Html.Raw(message.Content)</div>

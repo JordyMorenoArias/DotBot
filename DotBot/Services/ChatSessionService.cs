@@ -30,6 +30,16 @@ namespace DotBot.Services
         }
 
         /// <summary>
+        /// Gets the chat session by identifier with messages.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns></returns>
+        public async Task<ChatSession?> GetChatSessionByIdWithMessages(int id)
+        {
+            return await _chatSessionRepository.GetChatSessionByIdWithMessages(id);
+        }
+
+        /// <summary>
         /// Retrieves all chat sessions associated with a specific user.
         /// </summary>
         /// <param name="userId">The ID of the user.</param>

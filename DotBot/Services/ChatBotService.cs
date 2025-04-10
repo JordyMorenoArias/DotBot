@@ -22,14 +22,14 @@ namespace DotBot.Services
         /// </summary>
         /// <param name="messageAdd">The user's message to be processed.</param>
         /// <returns>The AI-generated response, or null if processing fails.</returns>
-        public async Task<string?> HandleUserPrompt(MessageAddDto messageAdd)
+        public async Task<IEnumerable<Message>?> HandleUserPrompt(MessageAddDto messageAdd)
         {
-            var message = await _messageService.AddMessage(messageAdd);
+            var userMessage = await _messageService.AddMessage(messageAdd);
 
-            if (message == null)
+            if (userMessage == null)
                 return null;
 
-            var messages = await _messageService.GetMessagesByChatSessionId(message.ChatSessionId);
+            var messages = await _messageService.GetMessagesByChatSessionId(userMessage.ChatSessionId);
 
             var prompt = messages.Select(m => new ChatMessage
             {
@@ -44,14 +44,19 @@ namespace DotBot.Services
 
             var assistantMessage = new MessageAddDto
             {
-                ChatSessionId = message.ChatSessionId,
+                ChatSessionId = userMessage.ChatSessionId,
                 Role = Role.assistant,
                 Content = response
             };
 
-            await _messageService.AddMessage(assistantMessage);
+            var botMessage = await _messageService.AddMessage(assistantMessage);
 
-            return response;
+            if (botMessage == null)
+                return null;
+
+            var result = new List<Message>() { userMessage, botMessage};    
+
+            return result;
         }
     }
 

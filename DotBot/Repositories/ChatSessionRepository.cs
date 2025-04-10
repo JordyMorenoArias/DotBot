@@ -22,6 +22,17 @@ namespace DotBot.Repositories
         public async Task<ChatSession?> GetChatSessionById(int id)
         {
             return await _context.ChatSessions
+                .FirstOrDefaultAsync(cs => cs.Id == id);
+        }
+
+        /// <summary>
+        /// Gets the chat session by identifier with messages.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns></returns>
+        public async Task<ChatSession?> GetChatSessionByIdWithMessages(int id)
+        {
+            return await _context.ChatSessions
                 .Include(cs => cs.Messages)
                 .FirstOrDefaultAsync(cs => cs.Id == id);
         }
