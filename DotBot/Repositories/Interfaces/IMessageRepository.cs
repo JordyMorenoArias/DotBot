@@ -36,10 +36,10 @@ namespace DotBot.Repositories.Interfaces
         Task<IEnumerable<Message>> GetMessagesByChatSessionId(int chatSessionId);
 
         /// <summary>
-        /// Updates an existing message in the repository.
+        /// Updates an existing message in the repository with new content.
         /// </summary>
-        /// <param name="message">The message entity with updated values.</param>
-        /// <returns>True if the message was successfully updated; false if the message wasn't found.</returns>
-        Task<bool> UpdateMessage(Message message);
+        /// <param name="message">The message entity containing updated values.</param>
+        /// <returns>The updated message entity with persisted changes.</returns>
+        Task<Message> UpdateMessage(Message message);
     }
 }

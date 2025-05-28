@@ -61,15 +61,11 @@ namespace DotBot.Repositories
         /// </summary>
         /// <param name="message">The message entity with updated values.</param>
         /// <returns><c>true</c> if the message was successfully updated; otherwise, <c>false</c>.</returns>
-        public async Task<bool> UpdateMessage(Message message)
+        public async Task<Message> UpdateMessage(Message message)
         {
-            var existingMessage = await GetMessageById(message.Id);
-
-            if (existingMessage == null)
-                return false;
-
-            _context.Entry(existingMessage).CurrentValues.SetValues(message);
-            return await _context.SaveChangesAsync() > 0;
+            _context.Messages.Update(message);
+            await _context.SaveChangesAsync();
+            return message;
         }
 
         /// <summary>
