@@ -5,6 +5,7 @@ namespace DotBot.Models.DTOs.Message
 {
     public class MessageAddDto
     {
+        [Required]
         public int ChatSessionId { get; set; }
 
         public int UserId { get; set; }

@@ -12,7 +12,7 @@ namespace DotBot.Models.Entities
         public int ChatSessionId { get; set; }
         public ChatSession? ChatSession { get; set; }
 
-        public Role Role { get; set; }
+        public Role Role { get; set; } = Role.user;
 
         [Required]
         public string Content { get; set; } = string.Empty;
