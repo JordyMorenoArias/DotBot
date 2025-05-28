@@ -5,10 +5,18 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DotBot.Repositories
 {
+    /// <summary>
+    /// Represents a repository for managing messages in the database.
+    /// </summary>
+    /// <seealso cref="DotBot.Repositories.Interfaces.IMessageRepository" />
     public class MessageRepository : IMessageRepository
     {
         private readonly DotBotContext _context;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MessageRepository"/> class.
+        /// </summary>
+        /// <param name="context">The database context used for data operations.</param>
         public MessageRepository(DotBotContext context)
         {
             _context = context;
@@ -37,11 +45,11 @@ namespace DotBot.Repositories
         }
 
         /// <summary>
-        /// Adds a new message to the database.
+        /// Adds a new message to the repository.
         /// </summary>
         /// <param name="message">The message entity to add.</param>
-        /// <returns><c>true</c> if the operation was successful; otherwise, <c>false</c>.</returns>
-        public async Task<Message?> AddMessage(Message message)
+        /// <returns>The added message with updated database-generated fields.</returns>
+        public async Task<Message> AddMessage(Message message)
         {
             await _context.Messages.AddAsync(message);
             await _context.SaveChangesAsync();
@@ -49,10 +57,10 @@ namespace DotBot.Repositories
         }
 
         /// <summary>
-        /// Updates an existing message in the database.
+        /// Updates an existing message in the repository.
         /// </summary>
         /// <param name="message">The message entity with updated values.</param>
-        /// <returns><c>true</c> if the update was successful; otherwise, <c>false</c>.</returns>
+        /// <returns><c>true</c> if the message was successfully updated; otherwise, <c>false</c>.</returns>
         public async Task<bool> UpdateMessage(Message message)
         {
             var existingMessage = await GetMessageById(message.Id);

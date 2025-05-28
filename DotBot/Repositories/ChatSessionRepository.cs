@@ -5,20 +5,28 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DotBot.Repositories
 {
+    /// <summary>
+    /// Represents a repository for managing chat sessions in the database.
+    /// </summary>
+    /// <seealso cref="DotBot.Repositories.Interfaces.IChatSessionRepository" />
     public class ChatSessionRepository : IChatSessionRepository
     {
         private readonly DotBotContext _context;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ChatSessionRepository"/> class.
+        /// </summary>
+        /// <param name="context">The database context to be used for data operations.</param>
         public ChatSessionRepository(DotBotContext context)
         {
             _context = context;
         }
 
         /// <summary>
-        /// Retrieves a chat session by its unique identifier, including its related messages.
+        /// Gets the chat session by identifier.
         /// </summary>
-        /// <param name="id">The ID of the chat session to retrieve.</param>
-        /// <returns>The chat session with the specified ID, or <c>null</c> if not found.</returns>
+        /// <param name="id">The unique identifier of the chat session.</param>
+        /// <returns>The chat session if found; otherwise, null.</returns>
         public async Task<ChatSession?> GetChatSessionById(int id)
         {
             return await _context.ChatSessions
@@ -28,8 +36,8 @@ namespace DotBot.Repositories
         /// <summary>
         /// Gets the chat session by identifier with messages.
         /// </summary>
-        /// <param name="id">The identifier.</param>
-        /// <returns></returns>
+        /// <param name="id">The unique identifier of the chat session.</param>
+        /// <returns>The chat session with its messages if found; otherwise, null.</returns>
         public async Task<ChatSession?> GetChatSessionByIdWithMessages(int id)
         {
             return await _context.ChatSessions
@@ -47,14 +55,15 @@ namespace DotBot.Repositories
             return await _context.ChatSessions
                 .Include(cs => cs.Messages)
                 .Where(cs => cs.UserId == userId)
+                .OrderByDescending(cs => cs.CreatedAt)
                 .ToListAsync();
         }
 
         /// <summary>
-        /// Retrieves the most recent chat session for a specific user, including its messages.
+        /// Gets the most recent session by user identifier.
         /// </summary>
-        /// param name="userId">The ID of the user whose most recent chat session is to be retrieved.</param>
-        /// <returns>The most recent chat session for the specified user, or <c>null</c> if not found.</returns>
+        /// <param name="userId">The unique identifier of the user.</param>
+        /// <returns>The most recent chat session for the specified user if found; otherwise, null.</returns>
         public async Task<ChatSession?> GetMostRecentSessionByUserId(int userId)
         {
             return await _context.ChatSessions
@@ -64,10 +73,10 @@ namespace DotBot.Repositories
         }
 
         /// <summary>
-        /// Adds a new chat session to the database.
+        /// Adds the chat session.
         /// </summary>
         /// <param name="chatSession">The chat session entity to add.</param>
-        /// <returns><c>true</c> if the operation was successful; otherwise, <c>false</c>.</returns>
+        /// <returns>The added chat session with updated database-generated fields.</returns>
         public async Task<ChatSession> AddChatSession(ChatSession chatSession)
         {
             await _context.ChatSessions.AddAsync(chatSession);
@@ -76,19 +85,15 @@ namespace DotBot.Repositories
         }
 
         /// <summary>
-        /// Updates an existing chat session in the database.
+        /// Updates the chat session.
         /// </summary>
-        /// <param name="chatSession">The chat session entity with updated values.</param>
-        /// <returns><c>true</c> if the update was successful; otherwise, <c>false</c>.</returns>
-        public async Task<bool> UpdateChatSession(ChatSession chatSession)
+        /// <param name="chatSession">The chat session entity to update.</param>
+        /// <returns>The updated chat session.</returns>
+        public async Task<ChatSession> UpdateChatSession(ChatSession chatSession)
         {
-            var existingChatSession = await GetChatSessionById(chatSession.Id);
-
-            if (existingChatSession == null)
-                return false;
-
-            _context.Entry(existingChatSession).CurrentValues.SetValues(chatSession);
-            return await _context.SaveChangesAsync() > 0;
+            _context.ChatSessions.Update(chatSession);
+            await _context.SaveChangesAsync();
+            return chatSession;
         }
 
         /// <summary>
@@ -104,22 +109,6 @@ namespace DotBot.Repositories
                 return false;
 
             _context.ChatSessions.Remove(chatSession);
-            return await _context.SaveChangesAsync() > 0;
-        }
-
-        /// <summary>
-        /// Deletes all chat sessions associated with a specific user.
-        /// </summary>
-        /// <param name="userId">The ID of the user whose chat sessions are to be deleted.</param>
-        /// <returns><c>true</c> if any chat sessions were deleted; otherwise, <c>false</c>.</returns>
-        public async Task<bool> DeleteChatSessionsByUserId(int userId)
-        {
-            var chatSessions = await GetChatSessionsByUserId(userId);
-
-            if (!chatSessions.Any())
-                return false;
-
-            _context.ChatSessions.RemoveRange(chatSessions);
             return await _context.SaveChangesAsync() > 0;
         }
     }
