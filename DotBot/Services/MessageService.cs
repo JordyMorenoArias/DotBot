@@ -15,6 +15,11 @@ namespace DotBot.Services
         private readonly IMessageRepository _messageRepository;
         private readonly IChatSessionService _chatSessionService;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MessageService"/> class.
+        /// </summary>
+        /// <param name="messageRepository">The message repository.</param>
+        /// <param name="chatSessionService">The chat session service.</param>
         public MessageService(IMessageRepository messageRepository, IChatSessionService chatSessionService)
         {
             _messageRepository = messageRepository;
@@ -42,52 +47,53 @@ namespace DotBot.Services
         }
 
         /// <summary>
-        /// Adds a new message to the appropriate chat session.
-        /// If no valid session is provided, the most recent session for the user is used.
+        /// Adds the message.
         /// </summary>
-        /// <param name="messageAdd">The DTO containing message details.</param>
-        /// <returns>The added message if successful; otherwise, <c>null</c>.</returns>
-        /// <exception cref="ArgumentException">Thrown when a valid chat session for the user cannot be found.</exception>
-        public async Task<Message?> AddMessage(MessageAddDto messageAdd)
+        /// <param name="userId">The user identifier.</param>
+        /// <param name="message">The message.</param>
+        /// <returns>The newly added message with all server-generated fields populated.</returns>
+        /// <exception cref="System.ArgumentException">
+        /// Chat session not found - ChatSessionId
+        /// or
+        /// Chat session does not belong to the user - ChatSessionId
+        /// </exception>
+        public async Task<Message> AddMessage(int userId, Message message)
         {
-            if (messageAdd.ChatSessionId > 0)
-            {
-                var chatSession = await _chatSessionService.GetChatSessionById(messageAdd.ChatSessionId);
+            var chatSession = await _chatSessionService.GetChatSessionById(message.ChatSessionId);
 
-                if (chatSession == null)
-                {
-                    var mostRecentSession = await _chatSessionService.GetMostRecentSessionByUserId(messageAdd.UserId)
-                        ?? throw new ArgumentException("No valid chat session found for user");
+            if (chatSession == null)
+                throw new ArgumentException("Chat session not found", nameof(message.ChatSessionId));
 
-                    messageAdd.ChatSessionId = mostRecentSession.Id;
-                }
-            }
-            else
-            {
-                var mostRecentSession = await _chatSessionService.GetMostRecentSessionByUserId(messageAdd.UserId)
-                    ?? throw new ArgumentException("No valid chat session found for user");
+            if (chatSession.UserId != userId)
+                throw new ArgumentException("Chat session does not belong to the user", nameof(message.ChatSessionId));
 
-                messageAdd.ChatSessionId = mostRecentSession.Id;
-            }
-
-            var message = new Message
-            {
-                ChatSessionId = messageAdd.ChatSessionId,
-                Role = messageAdd.Role,
-                Content = messageAdd.Content,
-            };
-
-            return await _messageRepository.AddMessage(message);
+            var result = await _messageRepository.AddMessage(message);
+            return result;
         }
 
         /// <summary>
-        /// Updates an existing message.
+        /// Updates the message.
         /// </summary>
-        /// <param name="message">The message with updated content.</param>
-        /// <returns><c>true</c> if the update is successful; otherwise, <c>false</c>.</returns>
-        /// <exception cref="ArgumentException">Thrown when the message does not exist.</exception>
-        public async Task<bool> UpdateMessage(Message message)
+        /// <param name="userId">The user identifier.</param>
+        /// <param name="message">The message.</param>
+        /// <returns>The updated message entity with all changes persisted.</returns>
+        /// <exception cref="System.ArgumentException">
+        /// Chat session not found - ChatSessionId
+        /// or
+        /// Chat session does not belong to the user - ChatSessionId
+        /// or
+        /// Message not found
+        /// </exception>
+        public async Task<Message> UpdateMessage(int userId, Message message)
         {
+            var chatSession = await _chatSessionService.GetChatSessionById(message.ChatSessionId);
+
+            if (chatSession == null)
+                throw new ArgumentException("Chat session not found", nameof(message.ChatSessionId));
+
+            if (chatSession.UserId != userId)
+                throw new ArgumentException("Chat session does not belong to the user", nameof(message.ChatSessionId));
+
             var result = await _messageRepository.GetMessageById(message.Id);
 
             if (result == null)
@@ -112,5 +118,4 @@ namespace DotBot.Services
             return await _messageRepository.DeleteMessage(id);
         }
     }
-
 }
