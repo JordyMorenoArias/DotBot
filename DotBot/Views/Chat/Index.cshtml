@@ -1,28 +1,58 @@
 ﻿@model ChatViewModel
 
 @{
-    ViewData["Title"] = "Dot Bot";
+	ViewData["Title"] = "Dot Bot";
 }
 
-<div>
-    @if (Model.CurrentChatSession != null)
-    {
-        <a class="btn-clean-session" asp-route-chatSessionId="@Model.CurrentChatSession.Id" asp-action="DeleteChatSession">Limpiar Chat</a>
-    }
-</div>
+<div class="chat-layout">
 
+	<!-- Sidebar -->
+	<aside class="sidebar">
+		<h2 class="sidebar-title">Sesiones</h2>
 
-<div class="chat-container">
-    <div class="chat-messages" id="chatMessages">
-            @Html.Partial("_MessagesPartial", Model.CurrentChatSession.Messages)
-    </div>
-    <form id="chat-form" class="chat-input">
-        <input type="hidden" id="chatSessionId" name="ChatSessionId" value="@Model.CurrentChatSession?.Id" />
-        <div class="chat-input-wrapper">
-            <input type="text" id="messageText" name="Content" placeholder="Escribe un mensaje..." autocomplete="off" required />
-            <button type="submit">Enviar</button>
-        </div>
-    </form>
+		<a asp-action="Index" class="btn btn-primary new-chat-btn">+ Nuevo Chat</a>
+
+		<nav class="chat-sessions-list">
+			@if (Model.ChatSessions is not null)
+			{
+				@foreach (var chatSession in Model.ChatSessions)
+				{
+					<a id="chat-title-@chatSession.Id" asp-route-chatSessionId="@chatSession.Id" asp-action="Index" class="chat-session-link">
+						@chatSession.Title
+					</a>
+				}
+			}
+		</nav>
+
+		@if (Model.CurrentChatSession != null)
+		{
+			<a asp-route-chatSessionId="@Model.CurrentChatSession.Id" asp-action="DeleteChatSession" class="btn btn-danger clear-chat-btn">
+				Limpiar Chat
+			</a>
+		}
+	</aside>
+
+	<!-- Main Chat Area -->
+	<main class="chat-main">
+
+		<section class="chat-messages" id="chatMessages">
+				@if (Model.CurrentChatSession is not null)
+				{
+					@Html.Partial("_MessagesPartial", Model.CurrentChatSession.Messages)
+				}
+		</section>
+
+		<form id="chat-form" class="chat-form">
+			<input type="hidden" id="chatSessionId" value="@(Model.CurrentChatSession == null ? 0 : Model.CurrentChatSession.Id)" />
+			<div class="chat-input-group">
+				<input type="text" id="messageText" class="chat-input" placeholder="Escribe un mensaje..." autocomplete="off" required />
+				<button type="submit" class="btn btn-success">
+					<img src="~/images/send-icon.svg" alt="Enviar" class="send-icon" />
+				</button>
+			</div>
+		</form>
+
+	</main>
 </div>
 
 <script src="~/js/chat.js" async defer></script>

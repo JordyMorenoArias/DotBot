@@ -31,6 +31,7 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IChatSessionService, ChatSessionService>();
 builder.Services.AddScoped<IMessageService, MessageService>();
 builder.Services.AddScoped<IChatBotService, ChatBotService>();
+builder.Services.AddScoped<IChatManagerService, ChatManagerService>();
 
 builder.Services.AddScoped<IChatIAService, GeminiService>();
 builder.Services.AddScoped<IMarkdownService, MarkdownService>();
@@ -109,6 +110,5 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Account}/{action=Login}")
     .WithStaticAssets();
-
 
 app.Run();
