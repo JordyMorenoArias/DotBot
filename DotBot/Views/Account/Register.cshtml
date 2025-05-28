@@ -13,19 +13,19 @@
     <form asp-controller="Account" asp-action="Register" method="post">
         <div class="input-group">
             <label asp-for="Username"></label>
-            <input asp-for="Username" type="text" placeholder="Tu nombre de usuario" required>
+            <input asp-for="Username" type="text" placeholder="Tu nombre de usuario" autocomplete="off" required>
             <span asp-validation-for="Username" class="text-danger"></span>
         </div>
 
         <div class="input-group">
             <label for="email">Correo electrónico</label>
-            <input asp-for="Email" type="email" placeholder="ejemplo@correo.com" required>
+            <input asp-for="Email" type="email" placeholder="ejemplo@correo.com" autocomplete="off" required>
             <span asp-validation-for="Email" class="text-danger"></span>
         </div>
 
         <div class="input-group">
             <label for="password">Contraseña</label>
-            <input asp-for="Password" type="password" id="password" placeholder="Tu contraseña" required>
+            <input asp-for="Password" type="password" id="password" placeholder="Tu contraseña" autocomplete="off" required>
             <span asp-validation-for="Password" class="text-danger"></span>
         </div>
 
