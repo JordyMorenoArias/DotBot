@@ -71,9 +71,9 @@ You can configure these values in the `appsettings.json` file (only for local de
     "Endpoint": "https://api.openai.com/v1/chat/completions"
   }
 }
+```
+---
 
-```
-```
 ## 🧱 Database Migrations
 
 Using .NET CLI
