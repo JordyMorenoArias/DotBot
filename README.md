@@ -29,7 +29,7 @@ This project showcases advanced integration of technologies such as JWT authenti
 - `Gemini API`
 - `C#`
 - `JS`
-- `Blazor` and `Razor Pages`
+- `Razor Pages`
 
 ---
 
